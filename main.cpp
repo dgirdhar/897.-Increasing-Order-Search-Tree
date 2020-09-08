@@ -11,30 +11,28 @@
  */
 class Solution {
 public:
-    void AddNode(std::vector<TreeNode *> &vec, TreeNode* root) {
+    void IterateTree(TreeNode **parent, TreeNode **next, TreeNode* root) {
         if (root != nullptr) {
-            AddNode(vec, root->left);
+            IterateTree(parent, next, root->left);
+            
             root->left = nullptr;
-            vec.push_back(root);
-            AddNode(vec, root->right);
+            if (*parent == nullptr) {
+                *parent = root;
+                *next = *parent;
+            }
+            else {
+                (*next)->right = root;
+                *next = (*next)->right;
+            }
+            
+            IterateTree(parent, next, root->right);
         }
     }
     TreeNode* increasingBST(TreeNode* root) {
-        std::vector<TreeNode *> vec;
-        
-        AddNode(vec, root);
         TreeNode* res = nullptr;
-        TreeNode* next = res;
+        TreeNode* next = nullptr;
         
-        if (vec.size() >= 1) {
-            res = vec[0];
-            next = res;
-        }
-        
-        for (int i = 1; i < vec.size(); ++i) {
-            next->right = vec[i];
-            next = next->right;
-        }
+        IterateTree(&res, &next, root);
         
         return res;
     }
